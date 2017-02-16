@@ -1,9 +1,9 @@
-*****************LOGIC BLOCKS AND NOT GATES*****************
+##LOGIC BLOCKS AND NOT GATES
 
 The basic idea behind how new logic blocks are made in joint.shapes.logic.js is through a form of inheritance, called extension.
 For example, this is the code for creating a not gate
 
-joint.shapes.logic.Not = joint.shapes.logic.Gate11.extend({
+```joint.shapes.logic.Not = joint.shapes.logic.Gate11.extend({
 
     defaults: _.defaultsDeep({
 
@@ -17,7 +17,7 @@ joint.shapes.logic.Not = joint.shapes.logic.Gate11.extend({
     }
 
 });
-
+```
 joint.shapes.logic is a bag of objects. By saying joint.shapes.logic.Not = blahblahblah... we are adding an object
 called Not to joint.shapes.logic. 
 
@@ -39,12 +39,12 @@ In general we should expect the input to be any integers, though we may later co
 encoded text is always a positive number.
 
 
-*****************ADDITION and GATE21*****************
+##ADDITION and GATE21
 
 Here is an example of addition, which is an extension of Gate21:
 
 
-joint.shapes.logic.Sum = joint.shapes.logic.Gate21.extend({
+```joint.shapes.logic.Sum = joint.shapes.logic.Gate21.extend({
 
     defaults: _.defaultsDeep({
 
@@ -58,14 +58,14 @@ joint.shapes.logic.Sum = joint.shapes.logic.Gate21.extend({
     }
 
 });
-
+```
 As you can see, the code is almost identical to that for the Not gate, but the operation now takes two inputs.
 
 
 
 The code for Gate21 is as follows:
 
-joint.shapes.logic.Gate21 = joint.shapes.logic.Gate.extend({
+```joint.shapes.logic.Gate21 = joint.shapes.logic.Gate.extend({
 
     markup: '<g class="rotatable"><g class="scalable"><image class="body"/></g><circle class="input input1"/><circle  class="input input2"/><circle class="output"/></g>',
 
@@ -81,7 +81,7 @@ joint.shapes.logic.Gate21 = joint.shapes.logic.Gate.extend({
     }, joint.shapes.logic.Gate.prototype.defaults)
 
 });
-
+```
 Which is a bit more complex, but still fairly straightforward. As you can see, the markup has to be specified, which
 corresponds to the HTML generated. This markup will need to be extended according to the number of inputs and outputs.
 Further, we can see that the inputs and outputs are specified here by giving them names and attributes in the attrs section.
@@ -92,7 +92,7 @@ Lastly, the ports are given names.
 If you take a look at the code for Sum, you can see that the operation takes two inputs input1 and input2. These are exactly
 the inputs which are created in the Gate21 code. Now take a look at Gate11:
 
-joint.shapes.logic.Gate11 = joint.shapes.logic.Gate.extend({
+```joint.shapes.logic.Gate11 = joint.shapes.logic.Gate.extend({
 
     markup: '<g class="rotatable"><g class="scalable"><image class="body"/></g><circle class="input"/><circle class="output"/></g>',
 
@@ -106,16 +106,16 @@ joint.shapes.logic.Gate11 = joint.shapes.logic.Gate.extend({
 
     }, joint.shapes.logic.Gate.prototype.defaults)
 });
-
+```
 There is only one input, called input. This is exactly the input that the operation for the Not gate is using. 
 
 
 
-*****************OKAY... NOW HOW THE HECK DO I INSTANTIATE THESE IN HTML?*****************
+##OKAY... NOW HOW THE HECK DO I INSTANTIATE THESE IN HTML?
 
 Good question. Take a look near the bottom of the logic.html file and you'll see this code
 
-var gates = {
+```var gates = {
 	four1: new joint.shapes.logic.Four({ position: { x: 100, y: 90 }}),
 	four2: new joint.shapes.logic.Four({ position: { x: 100, y: 220 }}),
 	sig: new joint.shapes.logic.Signal({ position: { x: 440, y: 155 }}),
@@ -125,7 +125,7 @@ var gates = {
         size: { width: 120, height: 60 }
     })
 };
-
+```
 This is where the gates are specified. The gates must be given a name (e.g. four1, four2, sig, etc.) and then a
 new logic gate is instantiated using our previously created logic block code. There is no need to make a constructor or anything,
 just specify the structure of the logic block in joint.shapes.logic.js and you'll be good to go. The only thing the constructor
