@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="joint.css" />
+	<link rel="stylesheet" href="logic.css" />
+    <script src="jquery.js"></script>
+    <script src="lodash.js"></script>
+    <script src="backbone.js"></script>
+    <script src="joint.js"></script>
+	<script src="joint.shapes.logic.js"></script>
+</head>
+<body>
+  <div id="paper-link-out"></div>
+  <div id="paper-html-elements"></div>
+  <script type="text/javascript">
+/* Beginning complex HTML input block here */
+	joint.shapes.html = {};
+	joint.shapes.html.Element = joint.shapes.logic.IO.extend({ //basic.Circle
+        defaults: joint.util.deepSupplement({
+            type: 'html.Element',
+            attrs: {
+				'.wire': { 'ref-dx': 0, d: 'M 0 0 L 23 0' },
+				circle: { ref: '.body', 'ref-dx': 30, 'ref-y': 0.5, magnet: true, 'class': 'output', port: 'out' },
+            }
+        }, joint.shapes.logic.IO.prototype.defaults)
+    });
+	
+    joint.shapes.html.ElementView = joint.dia.ElementView.extend({
+
+        template: [
+            '<div class="html-element">',
+            '<input type="number" value="0" />',
+            '</div>'
+        ].join(''),
+
+        initialize: function() {
+            _.bindAll(this, 'updateBox');
+            joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+
+            this.$box = $(_.template(this.template)());
+            // Prevent paper from handling pointerdown.
+            this.$box.find('input,select').on('mousedown click', function(evt) {
+                evt.stopPropagation();
+            });
+            // This is an example of reacting on the input change and storing the input data in the cell model.
+            this.$box.find('input').on('change', _.bind(function(evt) {
+                this.model.set('input', $(evt.target).val());
+            }, this));
+            this.$box.find('select').on('change', _.bind(function(evt) {
+                this.model.set('select', $(evt.target).val());
+            }, this));
+            this.$box.find('select').val(this.model.get('select'));
+            this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
+            // Update the box position whenever the underlying model changes.
+            this.model.on('change', this.updateBox, this);
+            // Remove the box when the model gets removed from the graph.
+            this.model.on('remove', this.removeBox, this);
+
+            this.updateBox();
+        },
+        render: function() {
+            joint.dia.ElementView.prototype.render.apply(this, arguments);
+            this.paper.$el.prepend(this.$box);
+            this.updateBox();
+            return this;
+        },
+        updateBox: function() {
+			current = initializeSignal(); //Update the signal the box is sending when the box is updated
+			
+            // Set the position and dimension of the box so that it covers the JointJS element.
+            var bbox = this.model.getBBox();
+            // Example of updating the HTML with a data stored in the cell model.
+            this.$box.find('label').text(this.model.get('label'));
+            this.$box.find('span').text(this.model.get('select'));
+            this.$box.css({
+                width: bbox.width,
+                height: bbox.height,
+                left: bbox.x,
+                top: bbox.y,
+                transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)'
+            });
+        },
+        removeBox: function(evt) {
+            this.$box.remove();
+        }
+    });
+/* End of complex HTML input block here*/
+
+var graph = new joint.dia.Graph();
+
+var paper = new joint.dia.Paper({
+
+    el: $('#paper-html-elements'),
+    model: graph,
+    width: 850, height: 400, gridSize: 1,
+    snapLinks: true,
+    linkPinning: false,
+    defaultLink: new joint.shapes.logic.Wire,
+
+    validateConnection: function(vs, ms, vt, mt, e, vl) {
+
+        if (e === 'target') {
+
+            // target requires an input port to connect
+            if (!mt || !mt.getAttribute('class') || mt.getAttribute('class').indexOf('input') < 0) return false;
+
+            // check whether the port is being already used
+            var portUsed = _.find(this.model.getLinks(), function(link) {
+
+                return (link.id !== vl.model.id &&
+                        link.get('target').id === vt.model.id &&
+                        link.get('target').port === mt.getAttribute('port')); 
+            });
+
+            return !portUsed;
+
+        } else { // e === 'source'
+
+            // source requires an output port to connect
+            return ms && ms.getAttribute('class') && ms.getAttribute('class').indexOf('output') >= 0; 
+        }
+    }
+});
+
+	
+
+// zoom the viewport by 50%
+//paper.scale(1.5,1.5);
+
+function toggleLive(model, signal) {
+    // add 'live' class to the element if there is a positive signal
+    V(paper.findViewByModel(model).el).toggleClass('live', signal > 0);
+}
+
+function broadcastSignal(gate, signal) {
+    // broadcast signal to all output ports
+    _.defer(_.invoke, graph.getConnectedLinks(gate, { outbound: true }), 'set', 'signal', signal);
+}
+
+function initializeSignal() {
+
+    var signal = Math.random();
+    // > 0 wire with a positive signal is alive
+    // < 0 wire with a negative signal means, there is no signal 
+    // 0 none of the above - reset value
+
+    // cancel all signals stores in wires
+    _.invoke(graph.getLinks(), 'set', 'signal', 0);
+
+    // remove all 'live' classes
+    $('.live').each(function() {
+        V(this).removeClass('live');
+    });
+
+    _.each(graph.getElements(), function(element) {
+        // broadcast a new signal from every input in the graph
+        (element instanceof joint.shapes.logic.Input) && broadcastSignal(element, signal);
+		(element instanceof joint.shapes.logic.Four) && broadcastSignal(element, 4);
+		(element instanceof joint.shapes.html.Element) && broadcastSignal(element, element.get('input'));
+    });
+
+    return signal;
+}
+
+// Every logic gate needs to know how to handle a situation, when a signal comes to their ports.
+joint.shapes.logic.Gate.prototype.onSignal = function(signal, handler) {
+    handler.call(this, signal);
+}
+// The repeater delays a signal handling by 400ms
+joint.shapes.logic.Repeater.prototype.onSignal = function(signal, handler) {
+    _.delay(handler, 400, signal);
+}
+// Output element just marks itself as alive.
+joint.shapes.logic.Output.prototype.onSignal = function(signal) {
+    toggleLive(this, signal);
+}
+// Signal displays the actual signal on the wire
+joint.shapes.logic.Signal.prototype.onSignal = function(signal) {
+    console.log("signal is: " + signal);
+	this.attr({
+		text: {text: signal}
+	});
+}
+
+// diagramm setup
+
+var gates = {
+	four1: new joint.shapes.logic.Four({ position: { x: 100, y: 90 }}),
+	four2: new joint.shapes.logic.Four({ position: { x: 100, y: 220 }}),
+	sig: new joint.shapes.logic.Signal({ position: { x: 440, y: 155 }}),
+	sum: new joint.shapes.logic.Sum({ position: { x: 240, y: 150 }}),
+	el1: new joint.shapes.html.Element({
+        position: { x: 550, y: 55 },
+        size: { width: 120, height: 60 }
+    })
+};
+
+/*    var port = {
+        id: 'abc',
+        group: 'a',
+        args: {}
+    };
+gates.el1.addPort(port);*/
+
+var wires = [
+    { source: { id: gates.four1.id, port: 'out' }, target: { id: gates.sum.id, port: 'in1' }},
+	{ source: { id: gates.four2.id, port: 'out' }, target: { id: gates.sum.id, port: 'in2' }},
+	{ source: { id: gates.el1.id, port: 'out' }, target: { id: gates.sig.id, port: 'in' }}
+];
+
+	
+// add gates and wires to the graph
+graph.addCells(_.toArray(gates));
+_.each(wires, function(attributes) {
+    graph.addCell(paper.getDefaultLink().set(attributes));
+});
+
+
+
+graph.on('change:source change:target', function(model, end) {
+
+    var e = 'target' in model.changed ? 'target' : 'source';
+
+    if ((model.previous(e).id && !model.get(e).id) || (!model.previous(e).id && model.get(e).id)) {
+        // if source/target has been connected to a port or disconnected from a port reinitialize signals
+        current = initializeSignal();
+    }
+});
+
+graph.on('change:signal', function(wire, signal) {
+	console.log("Wire now has signal " + signal);
+    toggleLive(wire, signal);
+
+    var magnitude = Math.abs(signal);
+
+    // if a new signal has been generated stop transmitting the old one
+    
+	//if (magnitude !== current) return;
+
+    var gate = graph.getCell(wire.get('target').id);
+
+    if (gate) {
+
+        gate.onSignal(signal, function() {
+
+            // get an array of signals on all input ports
+            var inputs = _.chain(graph.getConnectedLinks(gate, { inbound: true }))
+                .groupBy(function(wire) {
+                    return wire.get('target').port;
+                })
+                .map(function(wires) {
+                    return Math.max.apply(this, _.invoke(wires, 'get', 'signal')); // > 0
+                })
+                .value();
+
+            // calculate the output signal
+            //var output = magnitude * (gate.operation.apply(gate, inputs) ? 1 : -1);
+            var output = gate.operation.apply(gate, inputs);
+            broadcastSignal(gate, output);
+        });
+   }
+});
+
+// initialize signal and keep its value
+var current = initializeSignal();
+  </script>
+</body>
+</html>
