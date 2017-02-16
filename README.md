@@ -11,7 +11,9 @@ joint.js - The actual library for making nice, connectable flowchart diagrams
 
 
 joint.shapes.logic.js - This is an extension of joint.js which adds logic gate functionality.
-                        This is the file we will be editing most! We will be adding our 'lego logic blocks' here.
+                        
+                        This is the file we will be editing most! We will be adding our 'lego logic blocks' here.
+                        
                         See EXAMPLE.md for information on how to add a new block.
                         
                         
