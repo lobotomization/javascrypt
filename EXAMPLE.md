@@ -1,4 +1,5 @@
 *****************LOGIC BLOCKS AND NOT GATES*****************
+
 The basic idea behind how new logic blocks are made in joint.shapes.logic.js is through a form of inheritance, called extension.
 For example, this is the code for creating a not gate
 
@@ -39,6 +40,7 @@ encoded text is always a positive number.
 
 
 *****************ADDITION and GATE21*****************
+
 Here is an example of addition, which is an extension of Gate21:
 
 
@@ -110,6 +112,7 @@ There is only one input, called input. This is exactly the input that the operat
 
 
 *****************OKAY... NOW HOW THE HECK DO I INSTANTIATE THESE IN HTML?*****************
+
 Good question. Take a look near the bottom of the logic.html file and you'll see this code
 
 var gates = {
