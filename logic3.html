@@ -185,14 +185,25 @@ joint.shapes.logic.Signal.prototype.onSignal = function(signal) {
 // diagramm setup
 
 var gates = {
-	four1: new joint.shapes.logic.Four({ position: { x: 100, y: 90 }}),
-	four2: new joint.shapes.logic.Four({ position: { x: 100, y: 220 }}),
-	sig: new joint.shapes.logic.Signal({ position: { x: 440, y: 155 }}),
-	sum: new joint.shapes.logic.Sum({ position: { x: 240, y: 150 }}),
+	//four1: new joint.shapes.logic.Four({ position: { x: 100, y: 90 }}),
+	//four2: new joint.shapes.logic.Four({ position: { x: 100, y: 220 }}),
+	sig1: new joint.shapes.logic.Signal({ position: { x: 650, y: 120 }}),
+    sig2: new joint.shapes.logic.Signal({ position: { x: 650, y: 155 }}),
+	sum: new joint.shapes.logic.Sum({ position: { x: 450, y: 115 }}),
 	el1: new joint.shapes.html.Element({
-        position: { x: 550, y: 55 },
-        size: { width: 120, height: 60 }
-    })
+        position: { x: 20, y: 20 },
+        size: { width: 85, height: 40 }
+    }),
+    el2: new joint.shapes.html.Element({
+        position: { x: 20, y: 60 },
+        size: { width: 85, height: 40 }
+    }),
+    el3: new joint.shapes.html.Element({
+        position: { x: 20, y: 100 },
+        size: { width: 85, height: 40 }
+    }),
+    f1: new joint.shapes.logic.Fiestel({ position: { x: 350, y: 28 }}),
+    s1: new joint.shapes.logic.Splitter({ position: { x: 200, y: 60 }})
 };
 
 /*    var port = {
@@ -203,9 +214,13 @@ var gates = {
 gates.el1.addPort(port);*/
 
 var wires = [
-    { source: { id: gates.four1.id, port: 'out' }, target: { id: gates.sum.id, port: 'in1' }},
-	{ source: { id: gates.four2.id, port: 'out' }, target: { id: gates.sum.id, port: 'in2' }},
-	{ source: { id: gates.el1.id, port: 'out' }, target: { id: gates.sig.id, port: 'in' }}
+    { source: { id: gates.el1.id, port: 'out' }, target: { id: gates.f1.id, port: 'in1' }},
+	{ source: { id: gates.el2.id, port: 'out' }, target: { id: gates.s1.id, port: 'in' }},
+	{ source: { id: gates.el3.id, port: 'out' }, target: { id: gates.sum.id, port: 'in2' }},
+	{ source: { id: gates.s1.id, port: 'out1' }, target: { id: gates.f1.id, port: 'in2' }},
+    { source: { id: gates.s1.id, port: 'out2' }, target: { id: gates.sig2.id, port: 'in' }},
+	{ source: { id: gates.f1.id, port: 'out' }, target: { id: gates.sum.id, port: 'in1' }},
+	{ source: { id: gates.sum.id, port: 'out' }, target: { id: gates.sig1.id, port: 'in' }}
 ];
 
 	

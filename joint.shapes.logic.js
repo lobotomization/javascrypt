@@ -140,6 +140,42 @@ joint.shapes.logic.Gate21 = joint.shapes.logic.Gate.extend({
 
 });
 
+joint.shapes.logic.Gate12 = joint.shapes.logic.Gate.extend({
+
+    markup: '<g class="rotatable"><g class="scalable"><image class="body"/></g><circle class="input"/><circle  class="output output1"/><circle class="output output2"/></g>',
+
+    defaults: _.defaultsDeep({
+
+        type: 'logic.Gate21',
+        attrs: {
+            '.input': { ref: '.body', 'ref-x': -2, 'ref-y': 0.5, magnet: 'passive', port: 'in' },
+            '.output1': { ref: '.body', 'ref-dx': 2, 'ref-y': 0.3, magnet: true, port: 'out1' },
+            '.output2': { ref: '.body', 'ref-dx': 2, 'ref-y': 0.7, magnet: true, port: 'out2' }
+        }
+
+    }, joint.shapes.logic.Gate.prototype.defaults)
+
+});
+
+joint.shapes.logic.Splitter = joint.shapes.logic.Gate12.extend({
+
+    defaults: _.defaultsDeep({
+
+        type: 'logic.Splitter',
+		attrs: { image: { 'xlink:href':'splitter.png'
+		}}
+    }, joint.shapes.logic.Gate12.prototype.defaults),
+
+    operation: function(input) {
+		return input;
+        //return input1 ^ input2;
+		//return (input1 << 1) + (input1 >> 31); //Left cyclic shift, 32-bit blocksize
+		//return (input1 >> 1) + (input1 << 31); //Right cyclic shift, 32-bit blocksize
+
+    }
+
+});
+
 joint.shapes.logic.Repeater = joint.shapes.logic.Gate11.extend({
 
     defaults: _.defaultsDeep({
@@ -180,7 +216,26 @@ joint.shapes.logic.Sum = joint.shapes.logic.Gate21.extend({
     }, joint.shapes.logic.Gate21.prototype.defaults),
 
     operation: function(input1, input2) {
-		return input1 + input2;
+		return input1 ^ input2;
+        //return input1 ^ input2;
+		//return (input1 << 1) + (input1 >> 31); //Left cyclic shift, 32-bit blocksize
+		//return (input1 >> 1) + (input1 << 31); //Right cyclic shift, 32-bit blocksize
+
+    }
+
+});
+
+joint.shapes.logic.Fiestel = joint.shapes.logic.Gate21.extend({
+
+    defaults: _.defaultsDeep({
+
+        type: 'logic.Fiestel',
+		attrs: { image: { 'xlink:href':'fiestel.png'
+		}}
+    }, joint.shapes.logic.Gate21.prototype.defaults),
+
+    operation: function(input1, input2) {
+		return input1 ^ input2;
         //return input1 ^ input2;
 		//return (input1 << 1) + (input1 >> 31); //Left cyclic shift, 32-bit blocksize
 		//return (input1 >> 1) + (input1 << 31); //Right cyclic shift, 32-bit blocksize

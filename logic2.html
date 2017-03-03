@@ -16,11 +16,14 @@
 /* Beginning complex HTML input block here */
 	joint.shapes.html = {};
 	joint.shapes.html.Element = joint.shapes.logic.IO.extend({ //basic.Circle
+        markup: '<g class="rotatable"><g class="scalable"><image class="body"/></g><circle class="output circle1"/><circle  class="output circle2"/></g>',
+        
         defaults: joint.util.deepSupplement({
             type: 'html.Element',
             attrs: {
 				'.wire': { 'ref-dx': 0, d: 'M 0 0 L 23 0' },
-				circle: { ref: '.body', 'ref-dx': 30, 'ref-y': 0.5, magnet: true, 'class': 'output', port: 'out' },
+				'.circle1': { ref: '.body', 'ref-dx': -75, 'ref-y': 75, magnet: true, 'class': 'output', port: 'out1' },
+				'.circle2': { ref: '.body', 'ref-dx': 0, 'ref-y': 75, magnet: true, 'class': 'output', port: 'out2' },
             }
         }, joint.shapes.logic.IO.prototype.defaults)
     });
@@ -29,7 +32,8 @@
 
         template: [
             '<div class="html-element">',
-            '<input type="number" value="0" min="0" max="255"/>',
+            '<input class="ayy" type="number" value="0" min="0" max="255"/>',
+            '<input class="lmao" type="number" value="0" min="0" max="255"/>',
             '</div>'
         ].join(''),
 
@@ -43,8 +47,13 @@
                 evt.stopPropagation();
             });
             // This is an example of reacting on the input change and storing the input data in the cell model.
-            this.$box.find('input').on('change', _.bind(function(evt) {
-                this.model.set('input', $(evt.target).val());
+            this.$box.find('.ayy').on('change', _.bind(function(evt) {
+                console.log("ayyyyyy");
+                this.model.set('ayy', $(evt.target).val());
+            }, this));
+            this.$box.find('.lmao').on('change', _.bind(function(evt) {
+                console.log("lmao");
+                this.model.set('lmao', $(evt.target).val());
             }, this));
             this.$box.find('select').on('change', _.bind(function(evt) {
                 this.model.set('select', $(evt.target).val());
@@ -156,7 +165,7 @@ function initializeSignal() {
         // broadcast a new signal from every input in the graph
         (element instanceof joint.shapes.logic.Input) && broadcastSignal(element, signal);
 		(element instanceof joint.shapes.logic.Four) && broadcastSignal(element, 4);
-		(element instanceof joint.shapes.html.Element) && broadcastSignal(element, element.get('input'));
+		(element instanceof joint.shapes.html.Element) &&( broadcastSignal(element, element.get('ayy'))&&broadcastSignal(element, element.get('lmao')));
     });
 
     return signal;
