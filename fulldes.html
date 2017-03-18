@@ -245,7 +245,7 @@ var paper = new joint.dia.Paper({
 
     el: $('#paper-html-elements'),
     model: graph,
-    width: 850, height: 400, gridSize: 1,
+    width: 800 + 670*15, height: 400, gridSize: 1,
     snapLinks: true,
     linkPinning: false,
     defaultLink: new joint.shapes.logic.Wire,
@@ -332,7 +332,7 @@ joint.shapes.logic.Output.prototype.onSignal = function(signal) {
 }
 // Signal displays the actual signal on the wire
 joint.shapes.logic.Signal.prototype.onSignal = function(signal) {
-    console.log("signal is: " + signal);
+    //console.log("signal is: " + signal);
 	this.attr({
 		text: {text: signal}
 	});
@@ -410,28 +410,31 @@ joint.shapes.html.Round.prototype.onSignal = function(signal) {
 var gates = {
 	//four1: new joint.shapes.logic.Four({ position: { x: 100, y: 90 }}),
 	//four2: new joint.shapes.logic.Four({ position: { x: 100, y: 220 }}),
-	sig1: new joint.shapes.logic.Signal({ position: { x: 690, y: 280 }}),
-    sig2: new joint.shapes.logic.Signal({ position: { x: 690, y: 120 }}),
+	
+    sigl: new joint.shapes.logic.Signal({ position: { x: 690 + 670*15, y: 120 }, size: { width: 100, height: 30 }}),
+	sigr: new joint.shapes.logic.Signal({ position: { x: 690 + 670*15, y: 280 }, size: { width: 100, height: 30 }}),
 	//sum: new joint.shapes.logic.Sum({ position: { x: 450, y: 115 }}),
+	depth: [],
+	xor: [],
+	round: [],
+	fbox: [],
+	split: [],
 	key: new joint.shapes.html.Key({
         position: { x: 20, y: 20 },
         size: { width: 50, height: 30 }
     }),
-	xor: new joint.shapes.logic.Xor({ position: { x: 490, y: 115 }}),
-	round: new joint.shapes.html.Round({
-        position: { x: 210, y: 20 },
-        size: { width: 50, height: 30 }
-    }),
-    el2: new joint.shapes.html.Element({
-        position: { x: 20, y: 180 },
-        size: { width: 50, height: 30 }
-    }),
-    el3: new joint.shapes.html.Element({
-        position: { x: 20, y: 100 },
-        size: { width: 50, height: 30 }
-    }),
-    f1: new joint.shapes.logic.Fiestel({ position: { x: 390, y: 28 }}),
-    s1: new joint.shapes.logic.Splitter({ position: { x: 240, y: 175 }})
+	left: new joint.shapes.html.Element({
+				position: { x: 20, y: 100 },
+				size: { width: 50, height: 30 }
+				}),
+	right: new joint.shapes.html.Element({
+				position: { x: 20, y: 180 },
+				size: { width: 50, height: 30 }
+			})
+	
+
+		
+	
 };
 
 /*    var port = {
@@ -440,18 +443,47 @@ var gates = {
         args: {}
     };
 gates.el1.addPort(port);*/
+function popgates(){
+	for(i = 0; i < 16; i++){
+			gates.xor[i] = new joint.shapes.logic.Xor({ position: { x: 490 + 670*i, y: 115 }});
+			gates.round[i] = new joint.shapes.html.Round({
+				position: { x: 210 + 670*i, y: 20 },
+				size: { width: 50, height: 30 }
+			});
 
+			gates.fbox[i] = new joint.shapes.logic.Fiestel({ position: { x: 390 + 670*i, y: 28 }});
+			gates.split[i] = new joint.shapes.logic.Splitter({ position: { x: 240 + 670*i, y: 175 }});
+	}
+
+};
+popgates();
 var wires = [
-    { source: { id: gates.key.id, port: 'out' }, target: { id: gates.round.id, port: 'in' }},
-	{ source: { id: gates.round.id, port: 'out' }, target: { id: gates.f1.id, port: 'in1' }},
-	{ source: { id: gates.el2.id, port: 'out' }, target: { id: gates.s1.id, port: 'in' }},
-	{ source: { id: gates.el3.id, port: 'out' }, target: { id: gates.xor.id, port: 'in2' }},
-	{ source: { id: gates.s1.id, port: 'out1' }, target: { id: gates.f1.id, port: 'in2' }},
-    { source: { id: gates.s1.id, port: 'out2' }, target: { id: gates.sig2.id, port: 'in' }},
-	{ source: { id: gates.f1.id, port: 'out' }, target: { id: gates.xor.id, port: 'in1' }},
-	{ source: { id: gates.xor.id, port: 'out' }, target: { id: gates.sig1.id, port: 'in' }}
+	{ source: { id: gates.left.id, port: 'out' }, target: { id: gates.xor[0].id, port: 'in2' }},
+	{ source: { id: gates.right.id, port: 'out' }, target: { id: gates.split[0].id, port: 'in' }}
+	/*{ source: { id: gates.right.id, port: 'out' }, target: { id: gates.fbox[0].id, port: 'in2' }},
+	{ source: { id: gates.right.id, port: 'out' }, target: { id: gates.xor[1].id, port: 'in2' }}*/
 ];
+function popwires(){
+	for(i = 0; i < 16; i++){
+			wires.push({ source: { id: gates.key.id, port: 'out' }, target: { id: gates.round[i].id, port: 'in' }});
+			wires.push({ source: { id: gates.round[i].id, port: 'out' }, target: { id: gates.fbox[i].id, port: 'in1' }});
 
+			wires.push({ source: { id: gates.split[i].id, port: 'out1' }, target: { id: gates.fbox[i].id, port: 'in2' }});
+
+			wires.push({ source: { id: gates.fbox[i].id, port: 'out' }, target: { id: gates.xor[i].id, port: 'in1' }});
+			if(i < 15){
+				wires.push({ source: { id: gates.split[i].id, port: 'out2' }, target: { id: gates.xor[i+1].id, port: 'in2' }});
+				wires.push({ source: { id: gates.xor[i].id, port: 'out' }, target: { id: gates.split[i+1].id, port: 'in' }});
+
+			}else if( i >= 15 ){
+				wires.push({ source: { id: gates.split[i].id, port: 'out2' }, target: { id: gates.sigl.id, port: 'in' }});
+				wires.push({ source: { id: gates.xor[i].id, port: 'out' }, target: { id: gates.sigr.id, port: 'in' }});
+				/*wires.push({ source: { id: gates.xor[i-1].id, port: 'out' }, target: { id: gates.sigl.id, port: 'in' }});
+				wires.push({ source: { id: gates.xor[i].id, port: 'out' }, target: { id: gates.sigr.id, port: 'in' }});*/
+			}
+	}
+};
+popwires();
 	
 // add gates and wires to the graph
 graph.addCells(_.toArray(gates));

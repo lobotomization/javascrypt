@@ -65,10 +65,10 @@ transform:scale(0.75);
     right: 2px;
     bottom: 28px;
 }
-.html-element label.roundkey-text{
+.html-element label.key-text{
 	position: absolute;
-    top: 50px;
-    left: -2px;
+    top: 40px;
+    left: 20px;
     right: 0;
     border: none;
     color: #333;
@@ -81,201 +81,36 @@ transform:scale(0.75);
 .html-element input{
 	position: absolute;
     top: 20px;
-    left: 10px;
+    left: -5px;
     right: 0;
     border: none;
     color: #333;
     padding: 5px;
     height: 16px;
-	width: 40px;
+	width: 90px;
 }
 
-.html-element input.roundkey{
+.html-element input.keyl{
 	position: absolute;
+    top: 5px;
+    left: -5px;
+    right: 0;
+    border: none;
+    color: #333;
+    padding: 5px;
+    height: 16px;
+	width: 90px;
+}
+.html-element input.keyr {
+    position: absolute;
     top: 20px;
-    left: 20px;
+    left: -5px;
     right: 0;
     border: none;
     color: #333;
     padding: 5px;
     height: 16px;
-	width: 40px;
-}
-.html-element input.a11 {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a12 {
-    position: absolute;
-    top: 5px;
-    left: 50px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a13 {
-    position: absolute;
-    top: 5px;
-    left: 95px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a14 {
-    position: absolute;
-    top: 5px;
-    left: 140px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a21 {
-    position: absolute;
-    top: 25px;
-    left: 5px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a22 {
-    position: absolute;
-    top: 25px;
-    left: 50px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a23 {
-    position: absolute;
-    top: 25px;
-    left: 95px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a24 {
-    position: absolute;
-    top: 25px;
-    left: 140px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a31 {
-    position: absolute;
-    top: 45px;
-    left: 5px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a32 {
-    position: absolute;
-    top: 45px;
-    left: 50px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a33 {
-    position: absolute;
-    top: 45px;
-    left: 95px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a34 {
-    position: absolute;
-    top: 45px;
-    left: 140px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a41 {
-    position: absolute;
-    top: 65px;
-    left: 5px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a42 {
-    position: absolute;
-    top: 65px;
-    left: 50px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a43 {
-    position: absolute;
-    top: 65px;
-    left: 95px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
-}
-.html-element input.a44 {
-    position: absolute;
-    top: 65px;
-    left: 140px;
-    right: 0;
-    border: none;
-    color: #333;
-    padding: 5px;
-    height: 16px;
-	width: 40px;
+	width: 90px;
 }
 .html-element label {
     color: #333;
